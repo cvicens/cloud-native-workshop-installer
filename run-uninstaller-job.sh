@@ -18,4 +18,4 @@ cat ./ccn-token-secret.yaml | \
   sed "s/{{\b*NAMESPACE\b*}}/$(echo -n ${NAMESPACE} | base64)/" | \
   sed "s/{{\b*TOKEN\b*}}/${TOKEN}/" | oc create -n ${NAMESPACE} -f -
 
-oc delete job ccn-installer-batch -n ${NAMESPACE} ;  oc apply -n ${NAMESPACE} -f ./ccn-installer-batch.yaml
+oc delete job ccn-uninstaller-batch -n ${NAMESPACE} ;  oc apply -n ${NAMESPACE} -f ./ccn-uninstaller-batch.yaml
