@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ccn-installer-batch
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: quay.io/cvicensa/ccn-installer:v0.0.1
+        env:
+        - name: COUNT # In seconds
+          value: "50"
+        - name: MODULE_TYPE
+          value: "m1,m2,m3,m4"
+        - name: KUBECONFIG
+          value: "/tmp/config"
+        command:
+        - sh
+        - -c
+        - >
+          export TOKEN=$(cat /ccn/secret/token) &&
+          echo "TOKEN=${TOKEN}" &&
+          oc login https://${KUBERNETES_SERVICE_HOST=443}:${KUBERNETES_SERVICE_PORT=443} --token=${TOKEN} --insecure-skip-tls-verify &&
+          git clone https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2-infra &&
+          cd cloud-native-workshop-v2-infra &&
+          setup/preparelab_ccn.sh -c ${COUNT} -m ${MODULE_TYPE}
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: ccn-token-volume
+            mountPath: /ccn/secret
+            readOnly: true
+      volumes:
+      - name: ccn-token-volume
+        secret:
+          secretName: ccn-token-secret
+      restartPolicy: Never

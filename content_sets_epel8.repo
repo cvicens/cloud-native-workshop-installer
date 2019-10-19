@@ -1,0 +1,6 @@
+[epel-8]
+name=epel-8
+baseurl=https://download.fedoraproject.org/pub/epel/8/Everything/x86_64/
+enabled=1
+gpgcheck=0
+
